@@ -1,0 +1,27 @@
+services:
+  mysqldb:
+    image: "mysql:8"
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=root'
+      - 'MYSQL_DATABASE=products_db'
+      - 'MYSQL_USER=stefan'
+      - 'MYSQL_PASSWORD=123'
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+    ports:
+      - '8888:8888'
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
